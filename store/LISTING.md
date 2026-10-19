@@ -107,7 +107,7 @@ Certifications (tick all three):
 - I do not use or transfer user data to determine creditworthiness or for lending purposes
 
 **Privacy policy URL**
-_Needs a public URL: see "Assets still needed"._
+https://datatagextension-source.github.io/datatag/privacy.html
 
 ---
 
@@ -120,7 +120,7 @@ _Needs a public URL: see "Assets still needed"._
 
 ## Assets still needed
 
-- [ ] Public URL for the privacy policy (`privacy.html`)
+- [x] Privacy policy: https://datatagextension-source.github.io/datatag/privacy.html (GitHub Pages, from `main`)
 - [x] Screenshots: `store/screenshots/screenshot-1..4.png` (regenerate with `tools/make-store-assets.sh`)
 - [x] Small promo tile: `store/screenshots/promo-tile-440x280.png`
 - [x] Name: DataTag
