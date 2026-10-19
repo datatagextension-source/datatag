@@ -12,6 +12,9 @@ receive your email or phone number when you type it into a form.
    SHA-256, SHA-1 or MD5 (the hashes ad platforms use for "advanced matching").
 4. The popup lists who received it and how, and the icon badge counts the companies.
 
+Identifiers saved in **Settings** (`options.html`) are watched on every site, even when you don't type them
+(e.g. when you're already signed in). They live in `chrome.storage.local` only.
+
 Requests sent *before* the background worker learns the value are buffered and re-scanned,
 and watched values carry over to the confirmation page on the same site, where conversion pixels often fire.
 
@@ -32,6 +35,10 @@ cd test && python3 -m http.server 8765
 Open http://localhost:8765/signup-test.html, enter a fake email (e.g. `jane.test@example.com`) and phone,
 tab out, submit, then open the popup. You should see example.net (SHA-256), httpbin.org (plain) and
 example.org (base64) flagged, with example.com under "other third parties".
+
+## Icons
+
+`python3 tools/make-icons.py` regenerates `icons/` (no dependencies).
 
 ## Known limits
 

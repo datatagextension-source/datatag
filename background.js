@@ -12,6 +12,24 @@ const storeKey = (tabId) => `tab-${tabId}`;
 
 chrome.action.setBadgeBackgroundColor({ color: '#d93025' });
 
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason === 'install') chrome.tabs.create({ url: 'welcome.html' });
+});
+
+// Identifiers saved on the settings page are watched on every site, not just
+// where you type them. Kept in chrome.storage.local (this browser only, never synced).
+let saved = { values: [], needles: [] };
+let savedReady = loadSaved();
+
+async function loadSaved() {
+  const { identifiers = [] } = await chrome.storage.local.get('identifiers');
+  saved = { values: identifiers, needles: await buildNeedles(identifiers) };
+}
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.identifiers) savedReady = loadSaved();
+});
+
 function freshState(pageUrl, values = []) {
   let host = '';
   try { host = new URL(pageUrl).hostname; } catch {}
@@ -72,7 +90,7 @@ function check(st, requests, needles) {
       ...req.unpacked.flatMap((u) => scan(u.text, needles).map((h) => ({ ...h, encoding: `${h.encoding}, ${u.via}` }))),
     ];
     for (const hit of hits) {
-      const v = st.values.find((x) => x.id === hit.id);
+      const v = st.values.find((x) => x.id === hit.id) ?? saved.values.find((x) => x.id === hit.id);
       if (!v) continue;
       const key = `${req.domain}|${hit.id}|${hit.encoding}`;
       const existing = st.leaks.find((l) => l.key === key);
@@ -90,6 +108,7 @@ function check(st, requests, needles) {
 
 async function onRequest(d) {
   if (d.tabId < 0) return;
+  await savedReady;
 
   if (d.type === 'main_frame') {
     const prev = await getState(d.tabId);
@@ -117,14 +136,14 @@ async function onRequest(d) {
   const req = { url: d.url, host, domain, type: d.type, method: d.method, time: d.timeStamp, text, unpacked };
   st.buffer.push(req);
   if (st.buffer.length > MAX_BUFFER) st.buffer.shift();
-  check(st, [req], st.needles);
+  check(st, [req], [...st.needles, ...saved.needles]);
   persist(d.tabId, st);
 }
 
 async function addValue(tabId, { kind, value }) {
   const st = await getState(tabId);
   const norm = value.trim().toLowerCase();
-  if (st.values.some((v) => v.value.toLowerCase() === norm)) return;
+  if ([...st.values, ...saved.values].some((v) => v.value.toLowerCase() === norm)) return;
   const entry = { id: crypto.randomUUID(), kind, value: value.trim() };
   st.values.push(entry);
   if (st.values.length > MAX_VALUES) st.values.shift();
@@ -146,8 +165,8 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
     return;
   }
   if (msg.type === 'get') {
-    getState(msg.tabId).then(({ buffer, needles, values, ...rest }) =>
-      reply({ ...rest, watching: values.map(mask) }));
+    Promise.all([getState(msg.tabId), savedReady]).then(([{ buffer, needles, values, ...rest }]) =>
+      reply({ ...rest, watching: values.map(mask), saved: saved.values.map(mask) }));
     return true;
   }
   if (msg.type === 'reset') {

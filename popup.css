@@ -55,7 +55,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 .note { color: var(--muted); font-size: 11px; margin: 8px 0 0; }
 
-footer { margin-top: 14px; text-align: right; }
+footer { margin-top: 14px; display: flex; justify-content: space-between; }
 button {
   font: inherit; padding: 4px 10px; border-radius: 6px;
   border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer;

@@ -31,11 +31,14 @@ async function render() {
   summary.className = leakDomains.length ? 'bad' : '';
   summary.textContent = leakDomains.length
     ? `${leakDomains.length} compan${leakDomains.length === 1 ? 'y' : 'ies'} received your data from this page.`
-    : st.watching.length
+    : st.watching.length || st.saved.length
       ? 'No leaks seen yet for the values below.'
-      : 'Type your email or phone into a form on this page, then leave the field.';
+      : 'Type your email or phone into a form on this page, or save them in Settings.';
 
-  $('watching').replaceChildren(...st.watching.map((m) => el('span', { className: 'chip', textContent: `watching ${m}` })));
+  $('watching').replaceChildren(
+    ...st.watching.map((m) => el('span', { className: 'chip', textContent: `watching ${m}` })),
+    ...st.saved.map((m) => el('span', { className: 'chip', textContent: `saved ${m}` })),
+  );
 
   $('leaks-section').hidden = !leakDomains.length;
   $('leaks').replaceChildren(...leakDomains.map((name) => {
@@ -68,6 +71,8 @@ async function render() {
       el('span', { className: 'count', textContent: p.opaque ? `${p.count} req · ${p.opaque} unreadable` : `${p.count} req` }),
     )));
 }
+
+$('settings').addEventListener('click', () => chrome.runtime.openOptionsPage());
 
 $('reset').addEventListener('click', async () => {
   await chrome.runtime.sendMessage({ type: 'reset', tabId: tab.id });
