@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DataTag store screenshot</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1280px; height: 800px; overflow: hidden; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif; color: #16181d;
+      background: #f3f1ed;
+      display: grid; grid-template-columns: 470px 1fr; align-items: center; gap: 48px;
+      padding: 0 64px 0 88px;
+    }
+    .eyebrow { font-size: 15px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #d93025; margin: 0 0 18px; }
+    h1 { font-size: 50px; line-height: 1.08; letter-spacing: -.02em; margin: 0 0 22px; }
+    p { font-size: 21px; line-height: 1.5; color: #55575d; margin: 0; }
+    ul { margin: 26px 0 0; padding: 0; list-style: none; font-size: 19px; color: #33353a; }
+    li { margin: 12px 0; padding-left: 30px; position: relative; }
+    li::before { content: ''; position: absolute; left: 0; top: 7px; width: 14px; height: 14px; border-radius: 50%; background: #d93025; }
+
+    .window {
+      position: relative; height: 640px; border-radius: 14px; background: #fff; overflow: hidden;
+      box-shadow: 0 30px 70px rgba(22, 24, 29, .18), 0 0 0 1px rgba(22, 24, 29, .06);
+    }
+    .bar { height: 52px; display: flex; align-items: center; gap: 14px; padding: 0 16px; background: #ebe9e5; }
+    .dots { display: flex; gap: 7px; }
+    .dots i { width: 12px; height: 12px; border-radius: 50%; background: #d3d1cd; }
+    .url { flex: 1; height: 32px; border-radius: 16px; background: #fff; display: flex; align-items: center; padding: 0 16px; font-size: 14px; color: #6b6b6b; }
+    .ext { position: relative; width: 28px; height: 28px; }
+    .ext img { width: 28px; height: 28px; }
+    .ext b { position: absolute; right: -8px; bottom: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #d93025; color: #fff; font-size: 11px; display: grid; place-items: center; }
+
+    /* Faint signup form behind the popup */
+    .page { padding: 64px 0 0 56px; }
+    .page .h { width: 220px; height: 22px; border-radius: 6px; background: #e3e1dc; margin-bottom: 28px; }
+    .page .f { width: 300px; height: 40px; border-radius: 8px; border: 2px solid #e3e1dc; margin-bottom: 16px; padding: 9px 12px; font-size: 15px; color: #9a9a9a; }
+    .page .btn { width: 300px; height: 42px; border-radius: 8px; background: #d6d4cf; }
+
+    .popup {
+      position: absolute; top: 60px; right: 14px; width: 380px; height: 570px; border: 0; border-radius: 10px; background: #fff;
+      box-shadow: 0 18px 50px rgba(22, 24, 29, .22), 0 0 0 1px rgba(22, 24, 29, .08);
+    }
+    .settings { position: absolute; top: 52px; left: 0; width: 100%; height: calc(100% - 52px); border: 0; }
+
+    /* Layout 3: share card, full width */
+    body.wide { grid-template-columns: 1fr; padding: 0 88px; align-content: center; gap: 36px; }
+    body.wide .copy { text-align: center; }
+    body.wide h1 { margin-bottom: 12px; }
+    .card { width: 960px; height: 504px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 30px 70px rgba(22, 24, 29, .22); }
+    .card iframe { width: 1200px; height: 630px; border: 0; transform: scale(.8); transform-origin: 0 0; }
+  </style>
+</head>
+<body>
+  <script>
+    const n = Number(new URLSearchParams(location.search).get('n') || 1);
+    const browser = (url, badge, inner) => `
+      <div class="window">
+        <div class="bar"><div class="dots"><i></i><i></i><i></i></div>
+          <div class="url">${url}</div>
+          <div class="ext"><img src="../../icons/icon128.png" alt="">${badge ? `<b>${badge}</b>` : ''}</div></div>
+        ${inner}
+      </div>`;
+    const form = `<div class="page"><div class="h"></div><div class="f">jane.doe@example.com</div><div class="f">••••••••</div><div class="btn"></div></div>`;
+
+    const layouts = {
+      1: () => `
+        <div class="copy">
+          <p class="eyebrow">DataTag</p>
+          <h1>See who gets your email the moment you type it.</h1>
+          <p>One test signup on a major online retailer sent the email to 7 companies, including a data broker that got it before the form was even submitted.</p>
+        </div>
+        ${browser('shop.example/account/signup', 7, form + '<iframe class="popup" src="popup-frame.html"></iframe>')}`,
+      2: () => `
+        <div class="copy">
+          <p class="eyebrow">Sees through disguises</p>
+          <h1>Finds your email even when it's hidden.</h1>
+          <p>Trackers rarely send it as plain text. DataTag recognises it when it's:</p>
+          <ul>
+            <li>hashed with SHA-256, SHA-1 or MD5</li>
+            <li>base64 or URL-encoded</li>
+            <li>inside compressed session recordings</li>
+          </ul>
+        </div>
+        ${browser('shop.example/account/signup', 7, form + '<iframe class="popup" src="popup-frame.html?set=encodings"></iframe>')}`,
+      3: () => `
+        <div class="copy">
+          <p class="eyebrow">Share what you find</p>
+          <h1>One click turns results into a shareable card.</h1>
+          <p>Your email address and phone number are never included.</p>
+        </div>
+        <div class="card"><iframe src="report-frame.html?tab=1"></iframe></div>`,
+      4: () => `
+        <div class="copy">
+          <p class="eyebrow">Private by design</p>
+          <h1>Runs entirely in your browser.</h1>
+          <ul>
+            <li>No servers, no accounts, no analytics</li>
+            <li>Never sends your data anywhere</li>
+            <li>Results clear when you close the tab</li>
+            <li>Watches for saved details on every site</li>
+          </ul>
+        </div>
+        ${browser('DataTag settings', 0, '<iframe class="settings" src="options-frame.html"></iframe>')}`,
+    };
+    if (n === 3) document.body.classList.add('wide');
+    document.body.innerHTML = layouts[n]();
+  </script>
+</body>
+</html>

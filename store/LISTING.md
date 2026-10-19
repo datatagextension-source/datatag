@@ -121,6 +121,6 @@ _Needs a public URL: see "Assets still needed"._
 ## Assets still needed
 
 - [ ] Public URL for the privacy policy (`privacy.html`)
-- [ ] 1–5 screenshots, 1280×800
-- [ ] Small promo tile, 440×280
-- [ ] Final decision on the name ("DataTag" vs. the UK company Datatag)
+- [x] Screenshots: `store/screenshots/screenshot-1..4.png` (regenerate with `tools/make-store-assets.sh`)
+- [x] Small promo tile: `store/screenshots/promo-tile-440x280.png`
+- [x] Name: DataTag

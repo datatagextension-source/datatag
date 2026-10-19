@@ -104,7 +104,7 @@ async function main() {
   $('title').textContent = `${report.site}: ${describeRecipients(report.counts)}`;
 
   const icon = new Image();
-  icon.src = 'icons/icon128.png';
+  icon.src = new URL('icons/icon128.png', import.meta.url).href;
   await Promise.all([icon.decode(), document.fonts.ready]);
   drawCard($('card'), report, icon);
   $('text').value = toText(report);

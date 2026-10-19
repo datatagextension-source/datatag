@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DataTag report</title>
+  <link rel="stylesheet" href="../../pages.css">
+  <style>
+    canvas { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); display: block; margin-top: 24px; }
+    textarea {
+      width: 100%; min-height: 180px; margin-top: 8px; padding: 12px; border-radius: 8px;
+      font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      background: var(--card); color: var(--fg); border: 1px solid var(--line); resize: vertical;
+    }
+  </style>
+  <style>body { padding: 0; overflow: hidden; } main > :not(canvas) { display: none !important; } main { max-width: none; } canvas { margin: 0; border: 0; border-radius: 0; }</style>
+</head>
+<body>
+  <main>
+    <div class="brand"><img src="../../icons/icon128.png" alt=""><span>DataTag</span></div>
+    <h1 id="title">Share what you found</h1>
+    <p class="lede">Your email address and phone number are never included, only which companies received them.</p>
+
+    <canvas id="card" width="1200" height="630" aria-label="Report image"></canvas>
+    <div class="actions">
+      <button class="primary" id="download">Download image</button>
+      <button id="copy">Copy text</button>
+    </div>
+
+    <h2>Text version</h2>
+    <textarea id="text" readonly></textarea>
+    <p class="error" id="error" role="alert"></p>
+  </main>
+  <script src="stub.js"></script>
+  <script type="module" src="../../report.js"></script>
+</body>
+</html>

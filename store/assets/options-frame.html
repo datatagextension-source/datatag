@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DataTag settings</title>
+  <link rel="stylesheet" href="../../pages.css">
+  <style>body { padding: 40px 48px; overflow: hidden; }</style>
+</head>
+<body>
+  <main>
+    <div class="brand"><img src="../../icons/icon128.png" alt=""><span>DataTag</span></div>
+
+    <h1>My identifiers</h1>
+    <p class="lede">DataTag watches for these on every site, not just where you type them.</p>
+
+    <h2>Add an email or phone number</h2>
+    <form class="add" id="add">
+      <input id="value" autocomplete="off" placeholder="you@example.com or +1 555 123 4567" aria-label="Email or phone number">
+      <button class="primary">Add</button>
+    </form>
+    <p class="error" id="error" role="alert"></p>
+
+    <h2>Watching</h2>
+    <ul class="ids" id="list"></ul>
+    <p class="empty" id="empty" hidden>Nothing saved yet.</p>
+
+    <p class="hint">Stored only in this browser and never synced or sent anywhere.
+      Include phone numbers with your country code for the best matching.
+      <a href="../../privacy.html">Privacy policy</a></p>
+  </main>
+  <script src="stub.js"></script>
+  <script type="module" src="../../options.js"></script>
+</body>
+</html>
