@@ -42,7 +42,8 @@ example.org (base64) flagged, with example.com under "other third parties".
 
 ## Known limits
 
-- Compressed (gzip/protobuf) request bodies and values encrypted client-side won't be detected.
+- Values encrypted client-side can't be read; those requests are counted as "unreadable" in the popup.
+  (gzip/deflate bodies and gzip blobs embedded as base64 are decompressed and scanned.)
 - First-party servers that forward your data server-side are invisible from the browser.
   Steps 2–3 (per-site email aliases plus leak alerts) cover that.
-- The domain → company list in `lib/match.js` is small; unknown domains show as "Unknown company".
+- The domain → company list in `lib/match.js` is small; unknown domains show as "unknown company".
