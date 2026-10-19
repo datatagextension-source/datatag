@@ -77,3 +77,5 @@ form.add input {
 .ids .value { overflow-wrap: anywhere; }
 .ids button { padding: 4px 10px; font-weight: 500; }
 .empty { color: var(--muted); }
+
+a { color: var(--fg); text-underline-offset: 2px; }
