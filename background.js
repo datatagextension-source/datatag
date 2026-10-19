@@ -1,4 +1,4 @@
-import { buildNeedles, scan, baseDomain, trackerName, isSameOwner, mask } from './lib/match.js';
+import { buildNeedles, scan, baseDomain, trackerName, isSameOwner, mask, countRecipients } from './lib/match.js';
 import { joinParts, unpackBody, unpackEmbedded } from './lib/unpack.js';
 
 const MAX_BUFFER = 200;     // recent third-party requests kept per tab for re-scanning
@@ -60,8 +60,9 @@ async function restore(tabId) {
 }
 
 function setBadge(tabId, st) {
-  const companies = new Set(st.leaks.map((l) => l.domain)).size;
-  chrome.action.setBadgeText({ tabId, text: companies ? String(companies) : '' }).catch(() => {});
+  const { companies, unknown } = countRecipients(st.leaks);
+  const total = companies + unknown;
+  chrome.action.setBadgeText({ tabId, text: total ? String(total) : '' }).catch(() => {});
 }
 
 function persist(tabId, st) {

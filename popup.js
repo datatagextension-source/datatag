@@ -1,4 +1,4 @@
-import { companyInfo } from './lib/match.js';
+import { companyInfo, countRecipients, describeRecipients } from './lib/match.js';
 
 const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 const $ = (id) => document.getElementById(id);
@@ -30,7 +30,7 @@ async function render() {
   const summary = $('summary');
   summary.className = names.length ? 'bad' : '';
   summary.textContent = names.length
-    ? `${names.length} compan${names.length === 1 ? 'y' : 'ies'} received your data from this page.`
+    ? `${describeRecipients(countRecipients(st.leaks))} received your data from this page.`
     : st.watching.length || st.saved.length
       ? 'No leaks seen yet for the values below.'
       : 'Type your email or phone into a form on this page, or save them in Settings.';

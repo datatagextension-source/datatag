@@ -1,4 +1,4 @@
-import { companyInfo, CATEGORIES } from './lib/match.js';
+import { companyInfo, CATEGORIES, countRecipients, describeRecipients, plural } from './lib/match.js';
 
 const $ = (id) => document.getElementById(id);
 const tabId = Number(new URLSearchParams(location.search).get('tab'));
@@ -23,10 +23,10 @@ function summarize(st) {
   const kinds = new Set(st.leaks.map((l) => l.kind));
   const what = kinds.has('email') && kinds.has('phone') ? 'my email and phone number'
     : kinds.has('phone') ? 'my phone number' : 'my email';
-  return { site: st.site || 'this site', list, what };
+  return { site: st.site || 'this site', list, what, counts: countRecipients(st.leaks) };
 }
 
-function drawCard(canvas, { site, list, what }, icon) {
+function drawCard(canvas, { site, list, what, counts }, icon) {
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height, P = 64;
   const font = (weight, size) => `${weight} ${size}px system-ui, -apple-system, "Segoe UI", sans-serif`;
@@ -45,10 +45,19 @@ function drawCard(canvas, { site, list, what }, icon) {
   ctx.font = font(500, 34);
   ctx.fillText(`On ${site}, ${what} was sent to`, P, 190);
 
-  const count = `${list.length} compan${list.length === 1 ? 'y' : 'ies'}`;
+  // Big red number = companies; services with an unknown owner get a quieter note.
+  const big = counts.companies
+    ? plural(counts.companies, 'company', 'companies')
+    : plural(counts.unknown, 'unknown service', 'unknown services');
   ctx.fillStyle = '#ff6b5e';
   ctx.font = font(800, 76);
-  ctx.fillText(count, P, 268);
+  ctx.fillText(big, P, 268);
+  if (counts.companies && counts.unknown) {
+    const x = P + ctx.measureText(big).width + 20;
+    ctx.fillStyle = '#a6a8ad';
+    ctx.font = font(500, 30);
+    ctx.fillText(`+ ${plural(counts.unknown, 'service', 'services')} with an unknown owner`, x, 262);
+  }
 
   const shown = list.length > 10 ? list.slice(0, 9) : list;
   const colW = (W - P * 2) / 2;
@@ -76,8 +85,8 @@ function drawCard(canvas, { site, list, what }, icon) {
   ctx.fillText(`Detected live in my browser with DataTag · ${date}`, P, H - P + 16);
 }
 
-function toText({ site, list, what }) {
-  const lines = [`On ${site}, ${what} was sent to ${list.length} compan${list.length === 1 ? 'y' : 'ies'}:`, ''];
+function toText({ site, list, what, counts }) {
+  const lines = [`On ${site}, ${what} was sent to ${describeRecipients(counts)}:`, ''];
   for (const c of list) lines.push(`• ${c.name} (${c.category}): ${[...c.how].join('; ')}`);
   lines.push('', 'Detected live in my browser with DataTag.');
   return lines.join('\n');
@@ -92,7 +101,7 @@ async function main() {
     return;
   }
   const report = summarize(st);
-  $('title').textContent = `${report.site}: ${report.list.length} compan${report.list.length === 1 ? 'y' : 'ies'}`;
+  $('title').textContent = `${report.site}: ${describeRecipients(report.counts)}`;
 
   const icon = new Image();
   icon.src = 'icons/icon128.png';
