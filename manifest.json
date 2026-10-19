@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "DataTag",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "See where your email and phone number go the moment you type them into a form.",
   "permissions": ["webRequest", "storage"],
   "host_permissions": ["<all_urls>"],

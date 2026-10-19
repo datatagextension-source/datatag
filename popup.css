@@ -45,8 +45,11 @@ ul { list-style: none; margin: 0; padding: 0; }
 .chip.bad { background: var(--danger-bg); color: var(--danger); }
 
 .leak { background: var(--card); border-left: 3px solid var(--danger); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; }
+.leak .head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .leak .name { font-weight: 600; }
-.leak .domain { color: var(--muted); margin-left: 4px; }
+.leak .category { color: var(--muted); font-size: 11px; white-space: nowrap; }
+.leak .domain { color: var(--muted); font-size: 11px; margin-bottom: 2px; }
+.muted { color: var(--muted); }
 .leak details { margin-top: 4px; color: var(--muted); font-size: 11px; }
 .leak code { display: block; word-break: break-all; margin-top: 4px; }
 
@@ -55,7 +58,9 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 .note { color: var(--muted); font-size: 11px; margin: 8px 0 0; }
 
-footer { margin-top: 14px; display: flex; justify-content: space-between; }
+footer { margin-top: 14px; display: flex; gap: 6px; }
+footer .spacer { flex: 1; }
+button:disabled { opacity: .45; cursor: default; }
 button {
   font: inherit; padding: 4px 10px; border-radius: 6px;
   border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer;

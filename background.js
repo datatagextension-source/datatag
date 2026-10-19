@@ -27,7 +27,17 @@ async function loadSaved() {
 }
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && changes.identifiers) savedReady = loadSaved();
+  if (area !== 'local' || !changes.identifiers) return;
+  const before = new Set(saved.values.map((v) => v.id));
+  savedReady = loadSaved().then(async () => {
+    // Newly saved identifiers: check what open tabs already sent.
+    const added = saved.needles.filter((n) => !before.has(n.id));
+    if (!added.length) return;
+    for (const [tabId, statePromise] of states) {
+      const st = await statePromise;
+      if (await check(st, st.buffer, added)) persist(tabId, st);
+    }
+  });
 });
 
 function freshState(pageUrl, values = []) {
@@ -63,17 +73,25 @@ function persist(tabId, st) {
   setBadge(tabId, st);
 }
 
+// Keeps only what's needed to read the request later; parsing (decompression,
+// base64 scanning) is deferred until there's an identifier to look for.
+function captureBody(body) {
+  if (!body) return null;
+  if (body.formData) return { formData: body.formData };
+  if (body.raw) return { raw: [joinParts(body.raw.map((p) => p.bytes))] };
+  return null;
+}
+
 // -> { text, unpacked: [{ via, text }], opaque }
-async function readRequest(d) {
-  let text = d.url;
+async function readRequest(url, body) {
+  let text = url;
   const unpacked = [];
   let opaque = false;
-  const body = d.requestBody;
   if (body?.formData) {
     text += '\n' + Object.entries(body.formData).map(([k, v]) => `${k}=${v.join(',')}`).join('&');
   }
   if (body?.raw) {
-    const result = await unpackBody(joinParts(body.raw.map((p) => p.bytes)));
+    const result = await unpackBody(body.raw[0]);
     text += '\n' + result.text;
     unpacked.push(...result.unpacked);
     opaque = result.opaque;
@@ -82,12 +100,25 @@ async function readRequest(d) {
   return { text, unpacked, opaque };
 }
 
-function check(st, requests, needles) {
+async function parse(st, req) {
+  if (!req.parsed) {
+    req.parsed = readRequest(req.url, req.body);
+    req.body = null;
+    const { opaque } = await req.parsed;
+    const party = st.parties[req.domain];
+    if (opaque && party) party.opaque = (party.opaque ?? 0) + 1;
+  }
+  return req.parsed;
+}
+
+async function check(st, requests, needles) {
+  if (!needles.length) return false;
   let found = false;
   for (const req of requests) {
+    const { text, unpacked } = await parse(st, req);
     const hits = [
-      ...scan(req.text, needles),
-      ...req.unpacked.flatMap((u) => scan(u.text, needles).map((h) => ({ ...h, encoding: `${h.encoding}, ${u.via}` }))),
+      ...scan(text, needles),
+      ...unpacked.flatMap((u) => scan(u.text, needles).map((h) => ({ ...h, encoding: `${h.encoding}, ${u.via}` }))),
     ];
     for (const hit of hits) {
       const v = st.values.find((x) => x.id === hit.id) ?? saved.values.find((x) => x.id === hit.id);
@@ -131,12 +162,13 @@ async function onRequest(d) {
   const party = (st.parties[domain] ??= { domain, company: trackerName(host), count: 0, opaque: 0 });
   party.count++;
 
-  const { text, unpacked, opaque } = await readRequest(d);
-  if (opaque) party.opaque = (party.opaque ?? 0) + 1;
-  const req = { url: d.url, host, domain, type: d.type, method: d.method, time: d.timeStamp, text, unpacked };
+  const req = {
+    url: d.url, host, domain, type: d.type, method: d.method, time: d.timeStamp,
+    body: captureBody(d.requestBody), parsed: null,
+  };
   st.buffer.push(req);
   if (st.buffer.length > MAX_BUFFER) st.buffer.shift();
-  check(st, [req], [...st.needles, ...saved.needles]);
+  await check(st, [req], [...st.needles, ...saved.needles]);
   persist(d.tabId, st);
 }
 
@@ -149,7 +181,7 @@ async function addValue(tabId, { kind, value }) {
   if (st.values.length > MAX_VALUES) st.values.shift();
   st.needles = await buildNeedles(st.values);
   // Trackers often fire on blur, before or alongside this message — re-check what already went out.
-  check(st, st.buffer, st.needles.filter((n) => n.id === entry.id));
+  await check(st, st.buffer, st.needles.filter((n) => n.id === entry.id));
   persist(tabId, st);
 }
 
