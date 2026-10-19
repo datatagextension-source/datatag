@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <h1>DataTag</h1>
+    <span id="site"></span>
+  </header>
+  <p id="summary"></p>
+  <div id="watching"></div>
+  <section id="leaks-section" hidden>
+    <h2>Received your data</h2>
+    <ul id="leaks"></ul>
+  </section>
+  <section id="parties-section" hidden>
+    <h2>Other third parties contacted</h2>
+    <ul id="parties"></ul>
+  </section>
+  <p id="opaque-note" class="note" hidden></p>
+  <footer>
+    <button id="reset">Reset this tab</button>
+  </footer>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

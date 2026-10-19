@@ -1,0 +1,62 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1f1f1f;
+  --muted: #6b6b6b;
+  --line: #e4e4e4;
+  --card: #f6f6f6;
+  --danger: #d93025;
+  --danger-bg: #fdecea;
+  --chip: #ececec;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e1e;
+    --fg: #ececec;
+    --muted: #9a9a9a;
+    --line: #333;
+    --card: #2a2a2a;
+    --danger: #ff6b5e;
+    --danger-bg: #3a2220;
+    --chip: #383838;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  width: 380px;
+  margin: 0;
+  padding: 14px 16px;
+  font: 13px/1.45 system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+h1 { font-size: 16px; margin: 0; }
+h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 16px 0 6px; }
+#site { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#summary { margin: 10px 0 6px; }
+#summary.bad { color: var(--danger); font-weight: 600; }
+
+ul { list-style: none; margin: 0; padding: 0; }
+.chip {
+  display: inline-block; padding: 1px 7px; margin: 2px 4px 2px 0;
+  border-radius: 10px; background: var(--chip); font-size: 11px;
+}
+.chip.bad { background: var(--danger-bg); color: var(--danger); }
+
+.leak { background: var(--card); border-left: 3px solid var(--danger); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; }
+.leak .name { font-weight: 600; }
+.leak .domain { color: var(--muted); margin-left: 4px; }
+.leak details { margin-top: 4px; color: var(--muted); font-size: 11px; }
+.leak code { display: block; word-break: break-all; margin-top: 4px; }
+
+.party { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--line); }
+.party .count { color: var(--muted); }
+
+.note { color: var(--muted); font-size: 11px; margin: 8px 0 0; }
+
+footer { margin-top: 14px; text-align: right; }
+button {
+  font: inherit; padding: 4px 10px; border-radius: 6px;
+  border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer;
+}
